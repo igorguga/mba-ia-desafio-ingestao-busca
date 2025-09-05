@@ -35,7 +35,9 @@ langchain-openai==0.3.30
 langchain-postgres==0.0.15
 langchain-text-splitters==0.3.9
 langsmith==0.4.20
+markdown-it-py==4.0.0
 marshmallow==3.26.1
+mdurl==0.1.2
 multidict==6.6.4
 mypy_extensions==1.1.0
 numpy==2.3.2
@@ -55,12 +57,14 @@ pyasn1_modules==0.4.2
 pydantic==2.11.7
 pydantic-settings==2.10.1
 pydantic_core==2.33.2
+Pygments==2.19.2
 pypdf==6.0.0
 python-dotenv==1.1.1
 PyYAML==6.0.2
 regex==2025.7.34
 requests==2.32.5
 requests-toolbelt==1.0.0
+rich==14.1.0
 rsa==4.9.1
 sniffio==1.3.1
 SQLAlchemy==2.0.43

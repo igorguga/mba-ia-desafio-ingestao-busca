@@ -1,3 +1,19 @@
+import os
+
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain.prompts import PromptTemplate
+from dotenv import load_dotenv
+from langchain_postgres import PGVector
+
+load_dotenv()
+for k in ("GOOGLE_API_KEY", 
+          "DATABASE_URL",
+          "PG_VECTOR_COLLECTION_NAME",
+          "PDF_PATH",
+          "GOOGLE_EMBEDDING_MODEL"):
+    if not os.getenv(k):
+        raise RuntimeError(f"Environment variable {k} is not set")
+
 PROMPT_TEMPLATE = """
 CONTEXTO:
 {contexto}
@@ -25,5 +41,33 @@ PERGUNTA DO USUÁRIO:
 RESPONDA A "PERGUNTA DO USUÁRIO"
 """
 
-def search_prompt(question=None):
-    pass
+def _database_search(question):
+
+  embeddings = GoogleGenerativeAIEmbeddings(model=os.getenv("GOOGLE_EMBEDDING_MODEL"))
+
+  store = PGVector(
+      embeddings=embeddings,
+      collection_name=os.getenv("PG_VECTOR_COLLECTION_NAME"),
+      connection=os.getenv("DATABASE_URL"),
+      use_jsonb=True,
+  )
+
+  return store.similarity_search_with_score(question, k=10)
+
+
+def search_prompt(question=None): 
+  template = PromptTemplate(
+      input_variables=["contexto","pergunta"],
+      template=PROMPT_TEMPLATE
+  )
+
+  contexto = _database_search(question)
+
+  if question:
+    return template.format(contexto=contexto, pergunta=question)
+  else:
+    return template
+
+
+if __name__ == "__main__":
+  print(search_prompt("Qual é a capital da França?"))
